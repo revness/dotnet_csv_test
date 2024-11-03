@@ -6,7 +6,6 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Check if file path is provided
         if (args.Length == 0)
         {
             Console.WriteLine("Please provide a CSV file path.");
@@ -16,7 +15,6 @@ class Program
 
         string filePath = args[0];
         
-        // Check if file exists
         if (!File.Exists(filePath))
         {
             Console.WriteLine($"File not found: {filePath}");
@@ -25,16 +23,28 @@ class Program
 
         try
         {
-            // Read first 6 lines (header + 5 rows)
-            var lines = File.ReadLines(filePath).Take(6).ToList();
+            // Skip header row, then take records starting with 'B'
+            var records = File.ReadLines(filePath)
+                .Skip(1)  // Skip header row
+                .Where(line => 
+                {
+                    var firstColumn = line.Split(',')[0].Trim();
+                    return firstColumn.StartsWith("B", StringComparison.OrdinalIgnoreCase);
+                })
+                .Take(5)
+                .ToList();
+
+            // Print header
+            Console.WriteLine("\nHeader row:");
+            Console.WriteLine(File.ReadLines(filePath).First());
             
-            Console.WriteLine("\nFirst 5 rows of the CSV file:\n");
-            foreach (var line in lines)
+            Console.WriteLine("\nFirst 5 records starting with 'B':");
+            foreach (var record in records)
             {
-                Console.WriteLine(line);
+                Console.WriteLine(record);
             }
             
-            Console.WriteLine($"\nTotal rows in file: {File.ReadLines(filePath).Count()}");
+            Console.WriteLine($"\nTotal 'B' records found: {records.Count}");
         }
         catch (Exception ex)
         {

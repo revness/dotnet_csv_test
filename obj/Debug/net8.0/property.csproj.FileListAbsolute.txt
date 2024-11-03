@@ -12,3 +12,4 @@
 /Users/chapmantang/Desktop/projects/property/obj/Debug/net8.0/property.pdb
 /Users/chapmantang/Desktop/projects/property/obj/Debug/net8.0/property.genruntimeconfig.cache
 /Users/chapmantang/Desktop/projects/property/obj/Debug/net8.0/ref/property.dll
+/Users/chapmantang/Desktop/projects/property/obj/Debug/net8.0/property.sourcelink.json
