@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-
+using System.Text;
 class Program
 {
     static void Main(string[] args)
@@ -45,6 +45,7 @@ class Program
             }
             
             Console.WriteLine($"\nTotal 'B' records found: {records.Count}");
+;
         }
         catch (Exception ex)
         {
