@@ -4,7 +4,8 @@ Lets try and query some CSV files and get some insights, while learning how to c
 
 # Description
 An app that takes a large dataset of nsw housing sales prices and extracts insights in a beautiful and easy to understand way.
-Built in ReactTS + tailwind for the frontend, and the backend RESTful API is written in .NET.
+Built in ReactTS + tailwind for the frontend, and the backend RESTful API is written in .NET. 
+We're going to try using sqlite for the first time as well.
 
 
 # Changelog
@@ -15,5 +16,11 @@ Built in ReactTS + tailwind for the frontend, and the backend RESTful API is wri
 - sets up frontend boilerplate react takes
 - sets up backend boilerplate .net /minimal API
 - CSV files are separated into multiple dat files,  combine them into one csv for visualisation
-
-
+-sets up first migration with EF Core migration tool using 
+```
+dotnet ef migrations add InitialCreate
+```
+-creates sqlite db using 
+```
+dotnet ef database update
+```
