@@ -13,3 +13,8 @@ An app that takes a large dataset of nsw housing sales prices and extracts insig
 # Changelog
 - Set up Readme
 - Gets .DAT files from source
+
+5/11/24
+- sets up frontend boilerplate react takes
+- sets up backend boilerplate .net /minimal API
+
