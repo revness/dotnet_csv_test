@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/chapmantang/Desktop/projects/property/propertyAPI/propertyAPI.csproj": {}
+    "/Users/chapmantang/Desktop/projects/propertyInsights/propertyAPI/propertyAPI.csproj": {}
   },
   "projects": {
-    "/Users/chapmantang/Desktop/projects/property/propertyAPI/propertyAPI.csproj": {
+    "/Users/chapmantang/Desktop/projects/propertyInsights/propertyAPI/propertyAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/chapmantang/Desktop/projects/property/propertyAPI/propertyAPI.csproj",
+        "projectUniqueName": "/Users/chapmantang/Desktop/projects/propertyInsights/propertyAPI/propertyAPI.csproj",
         "projectName": "propertyAPI",
-        "projectPath": "/Users/chapmantang/Desktop/projects/property/propertyAPI/propertyAPI.csproj",
+        "projectPath": "/Users/chapmantang/Desktop/projects/propertyInsights/propertyAPI/propertyAPI.csproj",
         "packagesPath": "/Users/chapmantang/.nuget/packages/",
-        "outputPath": "/Users/chapmantang/Desktop/projects/property/propertyAPI/obj/",
+        "outputPath": "/Users/chapmantang/Desktop/projects/propertyInsights/propertyAPI/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/chapmantang/.nuget/NuGet/NuGet.Config"
@@ -47,13 +47,27 @@
               "target": "Package",
               "version": "[8.0.10, )"
             },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.EntityFrameworkCore.InMemory": {
               "target": "Package",
-              "version": "[8.0.10, )"
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[8.0.0, )"
             },
             "NSwag.AspNetCore": {
               "target": "Package",
               "version": "[14.1.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.5.0, )"
             }
           },
           "imports": [

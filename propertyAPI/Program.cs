@@ -1,15 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
+var conn = builder.Configuration.GetConnectionString("PropertyDB") ?? "Data Source=property.db";
+builder.Services.AddDbContext<PropertyDb>(opt => opt.UseSqlite(conn));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(config =>
 {
-    config.DocumentName = "TodoAPI";
-    config.Title = "TodoAPI v1";
+    config.DocumentName = "PropertyAPI";
+    config.Title = "PropertyAPI v1";
     config.Version = "v1";
 });
 var app = builder.Build();
@@ -18,52 +19,52 @@ if (app.Environment.IsDevelopment())
     app.UseOpenApi();
     app.UseSwaggerUi(config =>
     {
-        config.DocumentTitle = "TodoAPI";
+        config.DocumentTitle = "PropertyAPI";
         config.Path = "/swagger";
         config.DocumentPath = "/swagger/{documentName}/swagger.json";
         config.DocExpansion = "list";
     });
 }
 
-app.MapGet("/todoitems", async (TodoDb db) =>
-    await db.Todos.ToListAsync());
+app.MapGet("/propertyitems", async (PropertyDb db) =>
+    await db.Properties.ToListAsync());
 
-app.MapGet("/todoitems/complete", async (TodoDb db) =>
-    await db.Todos.Where(t => t.IsComplete).ToListAsync());
+app.MapGet("/propertyitems/complete", async (PropertyDb db) =>
+    await db.Properties.Where(t => t.IsComplete).ToListAsync());
 
-app.MapGet("/todoitems/{id}", async (int id, TodoDb db) =>
-    await db.Todos.FindAsync(id)
-        is Todo todo
-            ? Results.Ok(todo)
+app.MapGet("/propertyitems/{id}", async (int id, PropertyDb db) =>
+    await db.Properties.FindAsync(id)
+        is Property property
+            ? Results.Ok(property)
             : Results.NotFound());
 
-app.MapPost("/todoitems", async (Todo todo, TodoDb db) =>
+app.MapPost("/propertyitems", async (Property property, PropertyDb db) =>
 {
-    db.Todos.Add(todo);
+    db.Properties.Add(property);
     await db.SaveChangesAsync();
 
-    return Results.Created($"/todoitems/{todo.Id}", todo);
+    return Results.Created($"/propertyitems/{property.Id}", property);
 });
 
-app.MapPut("/todoitems/{id}", async (int id, Todo inputTodo, TodoDb db) =>
+app.MapPut("/propertyitems/{id}", async (int id, Property inputProperty, PropertyDb db) =>
 {
-    var todo = await db.Todos.FindAsync(id);
+    var property = await db.Properties.FindAsync(id);
 
-    if (todo is null) return Results.NotFound();
+    if (property is null) return Results.NotFound();
 
-    todo.Name = inputTodo.Name;
-    todo.IsComplete = inputTodo.IsComplete;
+    property.Name = inputProperty.Name;
+    property.IsComplete = inputProperty.IsComplete;
 
     await db.SaveChangesAsync();
 
     return Results.NoContent();
 });
 
-app.MapDelete("/todoitems/{id}", async (int id, TodoDb db) =>
+app.MapDelete("/propertyitems/{id}", async (int id, PropertyDb db) =>
 {
-    if (await db.Todos.FindAsync(id) is Todo todo)
+    if (await db.Properties.FindAsync(id) is Property property)
     {
-        db.Todos.Remove(todo);
+        db.Properties.Remove(property);
         await db.SaveChangesAsync();
         return Results.NoContent();
     }
