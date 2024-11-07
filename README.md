@@ -24,3 +24,6 @@ dotnet ef migrations add InitialCreate
 ```
 dotnet ef database update
 ```
+
+6/12/24 1PM
+- Merge CSV data to sqlite db
