@@ -9,7 +9,8 @@ export interface FileItem {
 export const getAllFiles = async () => {
   const response = await fetch("http://localhost:5007/propertyitems/uploads");
   if (!response.ok) {
-    throw new Error("Failed to fetch files");
+    const errorText = await response.text();
+    throw new Error(errorText);
   }
   return (await response.json()) as FileItem[];
 };
@@ -17,14 +18,13 @@ export const getAllFiles = async () => {
 export const uploadFile = async (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
-
   const response = await fetch("http://localhost:5007/propertyitems/upload", {
     method: "POST",
     body: formData,
   });
-
   if (!response.ok) {
-    throw new Error("Failed to upload file");
+    const errorText = await response.text();
+    throw new Error(errorText);
   }
 
   return response.json();

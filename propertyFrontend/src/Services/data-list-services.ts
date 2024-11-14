@@ -23,9 +23,19 @@ export interface DataItem {
 export const getAllData = async () => {
   const response = await fetch("http://localhost:5007/propertyitems");
   if (!response.ok) {
-    throw new Error("Failed to fetch data");
+    const errorText = await response.text();
+    throw new Error(errorText);
   }
   const json = await response.json();
-  console.log(json);
   return json as DataItem[];
+};
+
+export const deleteDataById = async (id: number) => {
+  const response = await fetch(`http://localhost:5007/propertyitems/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText);
+  }
 };

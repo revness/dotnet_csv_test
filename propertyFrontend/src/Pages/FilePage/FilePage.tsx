@@ -5,7 +5,6 @@ import { DataFileContext } from "../../context/DataFileContextProvider";
 
 const FilePage = () => {
   const { file, updateData, updateFile } = useContext(DataFileContext);
-
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -23,10 +22,19 @@ const FilePage = () => {
       await uploadFile(file);
       updateData();
       updateFile();
-      setSuccess(`Successfully uploaded ${file.name}`);
-    } catch (e) {
+      setSuccess(`Successfully uploaded ${file.name}, ${file.size} bytes.`);
+    } catch (e: any) {
+      // Parse the error message which contains JSON
+      let errorMessage = "";
+      try {
+        const errorData = JSON.parse(e.message);
+        errorMessage = `${errorData.error}: ${errorData.details} (${errorData.processedRecords} records processed, ${errorData.successfulRecords} successful)`;
+      } catch {
+        errorMessage = e.message;
+      }
+
       console.error("Upload failed:", e);
-      setError("Failed to upload file. Please try again.");
+      setError(errorMessage);
     } finally {
       setIsUploading(false);
       event.target.value = "";
@@ -34,22 +42,20 @@ const FilePage = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">File Page</h1>
+    <div className="mx-auto max-w-7xl px-8">
+      <h1 className="text-2xl font-bold mt-4 mb-2 text-center">File Page</h1>
+      <p className="mb-4 text-center">
+        There are {file.length} files uploaded.{" "}
+      </p>
 
-      {error && <div> {error} </div>}
+      {error && <div className="mb-4"> {error} </div>}
 
-      {success && <div> {success} </div>}
+      {success && <div className="mb-4"> {success} </div>}
 
-      <div className="mb-4">
+      <div className="mb-4 flex justify-center">
         <label
           htmlFor="file-upload"
-          className={`inline-flex items-center px-4 py-2 rounded-md text-white
-            ${
-              isUploading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600 cursor-pointer"
-            }`}
+          className="bg-blue-500 hover:bg-blue-600 cursor-pointer p-2  text-white rounded"
         >
           <input
             id="file-upload"
@@ -57,7 +63,7 @@ const FilePage = () => {
             className="hidden"
             onChange={handleFileChange}
             disabled={isUploading}
-            accept=".dat,.txt,.csv"
+            accept=".dat"
           />
           {isUploading ? (
             <span className="flex items-center">

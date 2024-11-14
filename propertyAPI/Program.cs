@@ -2,7 +2,6 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -13,14 +12,9 @@ builder.Services.AddCors(options =>
     });
 });
 var conn = builder.Configuration.GetConnectionString("PropertyDB") ?? "Data Source=property.db";
-
-
-
 builder.Services.AddDbContext<PropertyDb>(opt => opt.UseSqlite(conn));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 builder.Services.AddAntiforgery();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(config =>
 {
@@ -28,8 +22,6 @@ builder.Services.AddOpenApiDocument(config =>
     config.Title = "PropertyAPI v1";
     config.Version = "v1";
 });
-
-
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -57,13 +49,6 @@ app.MapGet("/propertyitems", async (PropertyDb db) =>
     await db.Properties.ToListAsync());
 
 
-app.MapGet("/propertyitems/{id}", async (int id, PropertyDb db) =>
-    await db.Properties.FindAsync(id)
-        is Property property
-            ? Results.Ok(property)
-            : Results.NotFound());
-
-
 app.MapDelete("/propertyitems/{id}", async (int id, PropertyDb db) =>
 {
     if (await db.Properties.FindAsync(id) is Property property)
@@ -72,7 +57,6 @@ app.MapDelete("/propertyitems/{id}", async (int id, PropertyDb db) =>
         await db.SaveChangesAsync();
         return Results.NoContent();
     }
-
     return Results.NotFound();
 }
 );
@@ -85,8 +69,9 @@ app.MapPost("/propertyitems/upload", async (IFormFile file, PropertyDb db) =>
     if (!file.FileName.EndsWith(".DAT", StringComparison.OrdinalIgnoreCase))
         return Results.BadRequest("Only .DAT files are supported");
 
+
     var normalizedFileName = file.FileName.Trim().ToLowerInvariant();
-    Console.WriteLine(normalizedFileName, "File Name");
+    // Check if file has already been uploaded
     var existingUpload = await db.FileUploadHistory
         .FirstOrDefaultAsync(f => f.FileName == normalizedFileName);
     if (existingUpload != null)
@@ -99,7 +84,6 @@ app.MapPost("/propertyitems/upload", async (IFormFile file, PropertyDb db) =>
                 SuccessfulRecords = existingUpload.SuccessfulRecords
             });
         }
-
     var response = new DatFileUploadDto();
     var properties = new List<Property>();
     
@@ -124,7 +108,7 @@ app.MapPost("/propertyitems/upload", async (IFormFile file, PropertyDb db) =>
             }
             catch (Exception ex)
             {
-                response.Errors.Add($"Error on line {lineNumber}: {ex.Message}");
+                response.Errors.Add($"{ex.Message}");
             }
         }
     }
@@ -133,31 +117,29 @@ app.MapPost("/propertyitems/upload", async (IFormFile file, PropertyDb db) =>
     {
         // Begin transaction
         using var transaction = await db.Database.BeginTransactionAsync();
-
         try
         {
-            // Add properties
+            // 1 Add properties
             if (properties.Any())
             {
                 await db.Properties.AddRangeAsync(properties);
             }
-
-            // Record file upload history
+            // 2 Record file upload history
             var uploadHistory = new FileUploadHistory
             {
                 FileName = normalizedFileName,
-                UploadDate = DateTime.UtcNow,
+                UploadDate = DateTime.Now,
                 RecordsProcessed = response.ProcessedRecords,
                 SuccessfulRecords = response.SuccessfulRecords,
                 ProcessingErrors = response.Errors.Any() 
                     ? string.Join("\n", response.Errors)
                     : null
             };
-
             db.FileUploadHistory.Add(uploadHistory);
+            //3 Save changes
             await db.SaveChangesAsync();
+            //4 Commit transaction
             await transaction.CommitAsync();
-
             return Results.Ok(new
             {
                 FileName = file.FileName,
@@ -170,6 +152,7 @@ app.MapPost("/propertyitems/upload", async (IFormFile file, PropertyDb db) =>
         }
         catch
         {
+            // Rollback transaction if an error occurs
             await transaction.RollbackAsync();
             throw;
         }

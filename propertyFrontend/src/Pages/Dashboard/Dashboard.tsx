@@ -1,87 +1,42 @@
-import { useContext } from "react";
 import { DataFileContext } from "../../context/DataFileContextProvider";
-import {
-  Chart as ChartJS,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bubble } from "react-chartjs-2";
-
-ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
+import { useContext } from "react";
+import Chart from "../../components/Charts/Chart";
 
 const Dashboard = () => {
-  const data = useContext(DataFileContext).data;
-
-  const processedData = data
-    .filter(
-      (property) =>
-        property.area && property.purchasePrice && property.pricePerM2
-    )
-    .map((property) => ({
-      area: property.area,
-      pricePerM2: property.pricePerM2,
-      price: property.purchasePrice,
-      address: property.fullAddress,
-    }));
-
-  const options = {
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Area (m²)",
-        },
-        beginAtZero: true,
-        max: Math.max(...processedData.map((item) => item.area)) * 1.1,
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Price per m²",
-        },
-        beginAtZero: true,
-        max: Math.max(...processedData.map((item) => item.pricePerM2)) * 1.1,
-      },
-    },
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: (context: any) => {
-            const dataPoint = processedData[context.dataIndex];
-            return [
-              `Address: ${dataPoint.address}`,
-              `Area: ${dataPoint.area} m²`,
-              `Price per m²: $${dataPoint.pricePerM2.toFixed(2)}`,
-              `Total Price: $${dataPoint.price?.toLocaleString()}`,
-            ];
-          },
-        },
-      },
-    },
-  };
-
-  const chartData = {
-    datasets: [
-      {
-        label: "Residential (R)",
-        data: processedData.map((item) => ({
-          x: item.area,
-          y: item.pricePerM2,
-          r: item.price ? Math.sqrt(item.price) / 200 : 0, // Scale radius based on price
-        })),
-        backgroundColor: "rgba(54, 162, 235, 0.3)",
-        borderColor: "rgba(54, 162, 235, 1)",
-      },
-    ],
-  };
+  const { data, file, addChart, removeChart, charts } =
+    useContext(DataFileContext);
 
   return (
-    <div>
-      <div>Dashboard</div>
-      <div className="w-full h-96">
-        <Bubble options={options} data={chartData} />
+    <div className="max-w-7xl mx-auto px-8 flex flex-col items-center">
+      <h1 className="text-2xl font-bold mt-4 mb-2 text-center">Dashboard</h1>
+      <p className="text-center mb-4">
+        There are {data.length} data points and {file.length} files uploaded
+      </p>
+
+      <button
+        onClick={addChart}
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-md w-32"
+      >
+        Add Chart
+      </button>
+
+      <div className="flex flex-col items-center">
+        {charts.map((chartId, index) => (
+          <div
+            key={chartId}
+            className="border-black border-2 p-4 bg-white h[1600px] "
+          >
+            <button
+              onClick={() => removeChart(index)}
+              className="text-red-500 hover:text-red-700"
+            >
+              ✕
+            </button>
+            <div className="h-[550px] w-[800px] flex flex-col">
+              <Chart data={data} />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

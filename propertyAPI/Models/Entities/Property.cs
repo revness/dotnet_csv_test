@@ -3,11 +3,8 @@ using System.ComponentModel.DataAnnotations;
 public class Property
 {
     public int Id { get; set; }
-
-    // Required field
     [Required]
     public string PropertyId { get; set; } = string.Empty;
-
     // All other fields should be nullable
     public string? DistrictCode { get; set; }
     public string? PropertyName { get; set; }
