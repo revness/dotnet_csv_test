@@ -7,6 +7,12 @@ An app that takes a large dataset of nsw housing sales prices and extracts insig
 Built in ReactTS + tailwind for the frontend, and the backend RESTful API is written in .NET. 
 We're going to try using sqlite for the first time as well.
 
+# v2 Features to implement
+- add automated unzip/reading of .DAT files iteratively to the upload function.
+- add pagination to the file list and property data list
+- refactor chart to read data from server query instead of sending all data to front end and computing
+- add sorting/filtering function to file list and property data list
+- add CI/CD, implement code testing on upload, automated deployment, and hosting of the code
 
 # Changelog
 - Set up Readme
